@@ -1,24 +1,25 @@
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { useState } from 'react'
+import Home from './Home';
+import Room from './Room';
+import {RoomContext} from './context/RoomContext'
+import socketIO from 'socket.io-client';
 
+const socket = socketIO.connect('http://localhost:3000');
 function App() {
+  const [socketId, setSocketId] = useState()
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <RoomContext.Provider value={{socketId, setSocketId}}>
+      <BrowserRouter>
+        <div>
+          <Routes>
+            <Route path="/" element={<Home socket={socket} />}></Route>
+            <Route path="/chat" element={<Room socket={socket} />}></Route>
+          </Routes>
+        </div>
+      </BrowserRouter>
+    </RoomContext.Provider>
+
   );
 }
 
