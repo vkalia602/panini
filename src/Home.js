@@ -1,6 +1,5 @@
-import { useState } from "react";
-import Button from "./components/button";
 import Card from "./components/Card";
+import UsernameInput from "./UsernameInput"
 
 const rooms = [
   {
@@ -23,29 +22,8 @@ const rooms = [
   },
 ];
 
-const UsernameInput = ({ Username, setUsername }) => {
-  const [value, setValue] = useState("");
-  return (
-    <>
-      <input
-        className=""
-        value={value}
-        onChange={(e) => {
-          setValue(e.target.value);
-        }}
-      />
-      <Button
-        onClick={() => {
-          setUsername(value);
-          localStorage.setItem("username", value);
-        }}
-      />
-    </>
-  );
-};
 const Home = ({ socket }) => {
   const displayCards = () => {
-    console.log("displaying cards");
     const cards = rooms.map((room) => (
       <div key={room.name}>
         <Card
@@ -58,23 +36,15 @@ const Home = ({ socket }) => {
     ));
     return cards;
   };
-  const [username, setUsername] = useState(() => {
-    // getting stored value
-    const saved = localStorage.getItem("username");
-    return saved || "";
-  });
 
   return (
     <div>
       <h1>Welcome to Panini</h1>
       <h3>Connecting cool people since 1700's</h3>
-      {username.length > 0 ? (
-        <div className="grid grid-cols-3 gap-x-3 m-5 h-full">
-          {displayCards()}{" "}
-        </div>
-      ) : (
-        <UsernameInput Username={username} setUsername={setUsername} />
-      )}
+      <UsernameInput/>
+      <div className="grid grid-cols-3 gap-x-3 m-5 h-full">
+        {displayCards()}{" "}
+      </div>
     </div>
   );
 };

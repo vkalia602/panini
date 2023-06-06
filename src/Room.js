@@ -1,6 +1,7 @@
 import React, { useContext, useState, useEffect } from "react";
 import { RoomContext } from "./context/RoomContext";
 import Button from "./components/button";
+import { UserContext } from "./context/UserContext";
 const { io } = require("socket.io-client");
 
 const ENDPOINT =
@@ -15,15 +16,10 @@ const Chatting = ({
   setMessageList,
   socket,
 }) => {
-  const [username, setUsername] = useState(() => {
-    // getting stored value
-    const saved = localStorage.getItem("username");
-    return saved || "";
-  });
+  const {username} = useContext(UserContext)
   const {socketId} = useContext(RoomContext)
   useEffect(() => {
     socket.on('receive_message', (data) => {
-      console.log('recieve message', data);
       setMessageList((state) => [
         ...state,
         {
@@ -36,20 +32,18 @@ const Chatting = ({
   }, [socket, setMessageList])
 
   const handleSubmit = (e)=>{
-    e.preventDefault()
+    if(e){e.preventDefault()
     setMessage(e.target.value)
     const newMessage = {
       message,
       name: '1234',
       createdAt: new Date(),
     }
-    setTimeout(() => {
-      socket.emit('message', {
-        message: newMessage,
-        socketId: socketId,
-      });
-    }, 1000);
-    setMessageList([...messageList, message])
+    socket.emit('message', {
+      message: newMessage,
+      socketId: socketId,
+    });
+    }
   }
   const handleKeyDown = (event) => {
     if (event.key === 'Enter') {
@@ -61,7 +55,7 @@ const Chatting = ({
     <div className="grid grid-cols-1 gap-y-4">
       {messageList.map((item)=><div key={Math.random()}className={`border-2 rounded-md border-black p-4 bg-${COLOURLIST[0]}-500`}>
         <div>{username}</div>
-        {item}
+        {item.message}
         </div>)}
     </div>
     <input className="w-full p-2 border-blue-400 border-2 rounded-lg my-2" value={message} onChange={(e)=> setMessage(e.target.value)} onKeyDown={handleKeyDown} />
